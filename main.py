@@ -2,11 +2,16 @@ import requests
 import pandas as pd
 import time
 import os
+import json
 
 # ================= CONFIG =================
-SYMBOL = "BTC-USD"
-INTERVAL_MINUTES = 5
-BB_LENGTH = 60
+# SYMBOL = "BTC-USD"
+# INTERVAL_MINUTES = 5
+# BB_LENGTH = 60
+
+def load_config():
+    with open("config.json", "r") as f:
+        return json.load(f)
 
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
@@ -60,7 +65,13 @@ last_signal = None
 
 while True:
     try:
+        config = load_config()
+        SYMBOL = config["symbol"]
+        INTERVAL_MINUTES = config["timeframe"]
+        BB_LENGTH = config["bb_length"]
+
         df = get_data()
+        # df = get_data()
         buy, sell, price = check_signal(df)
 
         if buy and last_signal != "BUY":
